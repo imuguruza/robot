@@ -1,7 +1,8 @@
 #include <unistd.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <termios.h> // for keyboard input
-#include <string.h>
+//#include <string.h>
+#include <cstring>
 //#include <sstream>
 #include <stdio.h>
 
@@ -57,9 +58,9 @@ std::string processKeyboardInput (char c)
 }
 
 int main(int argc, char **argv) {
-  
+
   std::string cmd;
-  int key_file_descriptor;
+  char c;
   struct termios raw;
   struct termios original_terminal_state;
   //std::string name = "key_teleop";
@@ -72,41 +73,23 @@ int main(int argc, char **argv) {
   ros::Rate loop_rate(1);
   /***************************/
 
-  tcgetattr(key_file_descriptor, &original_terminal_state); // get terminal properties
+  tcgetattr(STDIN_FILENO, &original_terminal_state);
   memcpy(&raw, &original_terminal_state, sizeof(struct termios));
 
   raw.c_lflag &= ~(ICANON | ECHO);//local modes, enable canonical mode and echo
   // Setting a new line, then end of file
   raw.c_cc[VEOL] = 1;//special characters
   raw.c_cc[VEOF] = 2;
-  tcsetattr(key_file_descriptor, TCSANOW, &raw);
-
+  tcsetattr(STDIN_FILENO, TCSANOW, &raw);
   puts("Reading from keyboard");
   puts("---------------------------");
   puts("Press the arrow keys to move and q to quit");
 
-  char c;
-  int error;
+
   while (ros::ok() & (!quit_requested))
   {
-  //if (read(key_file_descriptor, &c, 1) < 0)
-    error = read(key_file_descriptor, &c, 1);
-    if ( error < 0)//Process the error
-    {//TODO I get errors, not ROSify code doesn't, C / C++ code mixture issue??
-      if (error == EAGAIN)
-        puts ("EAGAIN");
-      else if (error == EBADF)
-        puts ("EBADF");
-      else if (error == EFAULT)
-        puts ("EFAULT");
-      else if (error == EINTR)
-        puts ("EINTR");
-      else if (error == EINVAL)
-        puts ("EINVAL");
-      else if (error == EIO)
-        puts ("EIO");
-      else if (error = EISDIR)
-        puts ("EISDIR");
+    if ( read(STDIN_FILENO, &c, 1) < 0)//Process the error
+    {
       perror("read char failed():");
       exit(-1);
     }
@@ -116,11 +99,10 @@ int main(int argc, char **argv) {
       msg.data = cmd;
       key_pub.publish(msg);
       ros::spinOnce();
-      //Not sure if necessary
       //loop_rate.sleep();
     }
   }
-  tcsetattr(key_file_descriptor, TCSANOW, &original_terminal_state);
+  tcsetattr(STDIN_FILENO, TCSANOW, &original_terminal_state);
   puts("Exit");
 return 0;
 }
