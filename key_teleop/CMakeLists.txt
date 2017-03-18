@@ -16,12 +16,11 @@ catkin_package()
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 #SET(CMAKE_CXX_FLAGS "fpermissive")
-#add_definitions ( -fpermissive -Wall -Werror -Wextra)
-add_definitions ( -fpermissive -Wall -Werror -Wextra)
+add_definitions ( -Wall -Werror -Wextra)
 
 add_executable(key_teleop src/key_teleop.cpp)
 target_link_libraries(key_teleop ${catkin_LIBRARIES})
-##add_dependencies(key_teleop ros_erle_pwm_generate_messages_cpp)
+
 
 #file(GLOB SCRIPTS ${PROJECT_SOURCE_DIR}/examples/*)
 #  catkin_install_python(PROGRAMS
