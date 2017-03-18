@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
 ##add_message_files(DIRECTORY msg FILES pwm.msg)
 
 ## Generate added messages and services
-generate_messages(DEPENDENCIES std_msgs)
+##generate_messages(DEPENDENCIES std_msgs)
 
 ## Declare a catkin package
 catkin_package()
@@ -16,7 +16,8 @@ catkin_package()
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 #SET(CMAKE_CXX_FLAGS "fpermissive")
-#add_definitions ( -fpermissive)
+#add_definitions ( -fpermissive -Wall -Werror -Wextra)
+add_definitions ( -fpermissive -Wall -Werror -Wextra)
 
 add_executable(key_teleop src/key_teleop.cpp)
 target_link_libraries(key_teleop ${catkin_LIBRARIES})
